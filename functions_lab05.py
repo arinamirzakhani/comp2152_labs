@@ -4,6 +4,49 @@ import random
 # Will the line below print when you import function.py into main.py?
 # print("Inside function.py")
 
+# Q3: Collect Loot
+def collect_loot(loot_options, belt):
+    lootRoll = random.choice(range(1, len(loot_options) + 1))
+    loot = loot_options.pop(lootRoll - 1)
+    belt.append(loot)
+    print("Your belt: ", belt)
+    return [loot_options, belt]
+
+# Q4: Use Loot
+def use_loot(belt, health_points):
+    good_loot_options = ["Health Potion", "Leather Boots"]
+    bad_loot_options = ["Poison Potion"]
+
+    first_item = belt.pop(0)
+    if first_item in good_loot_options:
+        health_points = min(6, (health_points + 2))
+        print("You used " + first_item + " to up your health to " + str(health_points))
+    elif first_item in bad_loot_options:
+        health_points = max(0, (health_points - 2))
+        print("You used " + first_item + " to hurt your health to " + str(health_points))
+    else:
+        print("You used " + first_item + " but it's not helpful")
+
+    return belt, health_points
+
+# Q6: Inception Dream
+def inception_dream(levels):
+    if levels == 1:  # base case
+        return 2
+    else:  # recursive case
+        return 1 + inception_dream(levels - 1)
+
+# Example walkthrough:
+# inception_dream(5)
+# -> 1 + inception_dream(4)
+# -> 1 + 1 + inception_dream(3)
+# -> 1 + 1 + 1 + inception_dream(2)
+# -> 1 + 1 + 1 + 1 + inception_dream(1)
+# -> 1 + 1 + 1 + 1 + 2
+
+
+
+
 # Hero's Attack Function
 def hero_attacks(combat_strength, m_health_points):
     ascii_image = """

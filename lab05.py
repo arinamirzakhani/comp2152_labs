@@ -2,7 +2,7 @@
 import random
 
 # Put all the functions into another file and import them
-import functions_lab05_starter
+import functions_lab05
 
 # Game Flow
 # Define two Dice
@@ -114,37 +114,41 @@ if not input_invalid:
     print("    |    Player rolled " + str(m_health_points) + " health points for the monster")
 
     # Collect Loot
-    print("!!You find a loot bag!! You look inside to find 2 items:")
+    print("!You find a loot bag!! You look inside to find 2 items:")
     input("Roll for first item (Press enter)")
-    lootRoll = random.choice(range(1, len(loot_options) + 1))
-    loot = loot_options.pop(lootRoll - 1)
-    belt.append(loot)
-    print("Your belt: ", belt)
+    # lootRoll = random.choice(range(1, len(loot_options) + 1))
+    # loot = loot_options.pop(lootRoll - 1)
+    # belt.append(loot)
+    # print("Your belt: ", belt)
+    loot_options, belt = functions_lab05.collect_loot(loot_options, belt)
 
     # Second time Collecting Loot
     input("Roll for second item (Press enter)")
-    lootRoll = random.choice(range(1, len(loot_options) + 1))
-    loot = loot_options.pop(lootRoll - 1)
-    belt.append(loot)
-    print("Your belt: ", belt)
+    # lootRoll = random.choice(range(1, len(loot_options) + 1))
+    # loot = loot_options.pop(lootRoll - 1)
+    # belt.append(loot)
+    # print("Your belt: ", belt)
+    loot_options, belt = functions_lab05.collect_loot(loot_options, belt)
 
     # Organize Belt
     print("You're super neat, so you organize your belt alphabetically:")
     belt.sort()
     print("Your belt: ", belt)
 
+
     # Use Loot
     print("!!You see a monster in the distance! So you quickly use your first item:")
-    first_item = belt.pop(0)
-    if first_item in good_loot_options:
-        health_points = min(6, (health_points + 2))
-        print("You used " + first_item + " to up your health to " + str(health_points))
-    elif first_item in bad_loot_options:
-        health_points = max(0, (health_points - 2))
-        print("You used " + first_item + " to hurt your health to " + str(health_points))
-    else:
-        print("You used " + first_item + " but it's not helpful")                   
-    
+    # first_item = belt.pop(0)
+    # if first_item in good_loot_options:
+    #     health_points = min(6, (health_points + 2))
+    #     print("You used " + first_item + " to up your health to " + str(health_points))
+    # elif first_item in bad_loot_options:
+    #     health_points = max(0, (health_points - 2))
+    #     print("You used " + first_item + " to hurt your health to " + str(health_points))
+    # else:
+    #     print("You used " + first_item + " but it's not helpful")
+    belt, health_points = functions_lab05.use_loot(belt, health_points)
+
     print("    ------------------------------------------------------------------")
     print("    |", end="    ")
     input("Analyze the roll (Press enter)")
@@ -179,6 +183,13 @@ if not input_invalid:
     m_combat_strength += min(6, m_combat_strength + monster_powers[power_roll])
     print("    |    The monster's combat strength is now " + str(
         m_combat_strength) + " using the " + power_roll + " magic power")
+    # Q6: Inception Dream
+    crazy_level = functions_lab05.inception_dream(5)
+    health_points -= 1
+    combat_strength += crazy_level
+    print(f"Your health points are now {health_points}")
+    print(f"Your combat strength is now {combat_strength}")
+
 
     # Fight Sequence
     # Loop while the monster and the player are alive. Call fight sequence functions
@@ -186,16 +197,32 @@ if not input_invalid:
     while m_health_points > 0 and health_points > 0:
 
         input("You strike first (Press Enter)")
-        m_health_points = functions_lab05_starter.hero_attacks(combat_strength, m_health_points)
+        m_health_points = functions_lab05.hero_attacks(combat_strength, m_health_points)
         if m_health_points == 0:
             num_stars = 3
         else:
             input("The monster strikes (Press Enter)")
-            health_points = functions_lab05_starter.monster_attacks(m_combat_strength, health_points)
+            health_points = functions_lab05.monster_attacks(m_combat_strength, health_points)
             if health_points == 0:
                 num_stars = 1
             else:
                 num_stars = 2
 
-    stars = "*" * num_stars
-    print("Hero gets <" + stars + "> stars")
+input_invalid = True
+
+while input_invalid:
+    hero_name = input("Enter your Hero's name (in two words): ")
+    hero_names = hero_name.split()
+
+    if len(hero_names) != 2:
+        print("Invalid input - Enter a name with two words")
+    elif not hero_names[0].isalpha() or not hero_names[1].isalpha():
+        print("Invalid input - Enter a name with letters only")
+    else:
+        input_invalid = False
+
+short_name = hero_names[0][:2] + hero_names[1][:1]
+print(short_name)
+
+stars = "*" * num_stars
+print(f"Hero {short_name} gets <{stars}> stars.")
