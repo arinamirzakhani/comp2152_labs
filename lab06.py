@@ -1,5 +1,22 @@
+"""
+# Reading
+f = open("dontwant.txt")
+s = f.readlines()
+print(s)
+f.close()
 
+# Writing
+f = open("dontwant.txt", "w")
+f.write("Some line\n")
+f.write("More lines\n")
+f.close()
 
+# Appending
+with open("dontwant.txt", "a") as f:
+   # s = f.readlines()
+    # print(s)
+   f.write("Extra line\n")
+   """
 
 # Import the random library to use for the dice later
 import random
@@ -28,6 +45,22 @@ monster_powers = {
 
 # Define the number of stars to award the player
 num_stars = 0
+
+# Question 5: Loading a saved game
+monster_won_recently = False
+
+with open("save.txt", "r") as f:
+    lines = f.readlines()
+    most_recent_game = lines[-1].strip()
+    print(most_recent_game)
+
+if most_recent_game == "Monster has killed the hero previously.":
+    monster_won_recently = True
+else:
+    monster_won_recently = False
+
+
+
 
 # Loop to get valid input for Hero and Monster's Combat Strength
 i = 0
@@ -62,6 +95,15 @@ if not input_invalid:
     input_invalid = False
     combat_strength = int(combat_strength)
     m_combat_strength = int(m_combat_strength)
+
+    # Question 5 (cont.)
+    if monster_won_recently:
+        combat_strength += 1
+    else:
+        m_combat_strength += 1
+
+        print(combat_strength)
+        print(m_combat_strength)
 
     # Roll for weapon
     print("    |", end="    ")
@@ -173,8 +215,25 @@ if not input_invalid:
 
     # Call Recursive function
     print("    |", end="    ")
-    num_dream_lvls = input("How many dream levels do you want to go down?")
-    if num_dream_lvls != 0:
+
+    input_invalid = True
+    attempts = 0
+
+    while input_invalid and attempts < 3:
+        attempts += 1
+        num_dream_lvls = input("How many dream levels do you want to go down? (0-3): ")
+
+        if num_dream_lvls.isnumeric():
+            num_dream_lvls = int(num_dream_lvls)
+            if num_dream_lvls in range(0, 4):
+                input_invalid = False
+            else:
+                print("Your input was not valid. Please enter a number between 0 and 3.")
+        else:
+            print("Your input was not valid. Please enter a number between 0 and 3.")
+
+    if num_dream_lvls != 0 and input_invalid is False:
+
         health_points -= 1
         crazy_level = functions_lab06.inception_dream(num_dream_lvls)
         combat_strength += crazy_level
@@ -185,65 +244,86 @@ if not input_invalid:
     # Loop while the monster and the player are alive. Call fight sequence functions
     print("    ------------------------------------------------------------------")
     print("    |    You meet the monster. FIGHT!!")
+    hero_won = False
+
     while m_health_points > 0 and health_points > 0:
         # Fight Sequence
         print("    |", end="    ")
 
-        # Lab 5: Question 5:
         input("Roll to see who strikes first (Press Enter)")
         attack_roll = random.choice(small_dice_options)
-        if not (attack_roll % 2 == 0):
+
+        if attack_roll % 2 != 0:  # Player attacks first
             print("    |", end="    ")
             input("You strike (Press enter)")
             m_health_points = functions_lab06.hero_attacks(combat_strength, m_health_points)
+
             if m_health_points == 0:
                 num_stars = 3
+                hero_won = True
+                break
+
+            print("    |", end="    ")
+            print("------------------------------------------------------------------")
+            input("    |    The monster strikes (Press enter)!!!")
+            health_points = functions_lab06.monster_attacks(m_combat_strength, health_points)
+
+            if health_points == 0:
+                num_stars = 1
+                break
             else:
-                print("    |", end="    ")
-                print("------------------------------------------------------------------")
-                input("    |    The monster strikes (Press enter)!!!")
-                health_points = functions_lab06.monster_attacks(m_combat_strength, health_points)
-                if health_points == 0:
-                    num_stars = 1
-                else:
-                    num_stars = 2
-        else:
+                num_stars = 2
+
+        else:  # Monster attacks first
             print("    |", end="    ")
             input("The Monster strikes (Press enter)")
             health_points = functions_lab06.monster_attacks(m_combat_strength, health_points)
+
             if health_points == 0:
                 num_stars = 1
+                break
+
+            print("    |", end="    ")
+            print("------------------------------------------------------------------")
+            input("The hero strikes!! (Press enter)")
+            m_health_points = functions_lab06.hero_attacks(combat_strength, m_health_points)
+
+            if m_health_points == 0:
+                num_stars = 3
+                hero_won = True
+                break
             else:
-                print("    |", end="    ")
-                print("------------------------------------------------------------------")
-                input("The hero strikes!! (Press enter)")
-                m_health_points = functions_lab06.hero_attacks(combat_strength, m_health_points)
-                if m_health_points == 0:
-                    num_stars = 3
-                else:
-                    num_stars = 2
+                num_stars = 2
 
     # Final Score Display
     tries = 0
     input_invalid = True
-    while input_invalid and tries in range(5):
-        print("    |", end="    ")
 
-        hero_name = input("Enter your Hero's name (in two words)")
-        name = hero_name.split()
-        if len(name) != 2:
+    while input_invalid and tries < 5:
+        print("    |", end="    ")
+        hero_name = input("Enter your Hero's name (in two words): ").strip()
+        name_parts = hero_name.split()
+
+        if len(name_parts) != 2:
             print("    |    Please enter a name with two parts (separated by a space)")
-            tries += 1
+        elif not name_parts[0].isalpha() or not name_parts[1].isalpha():
+            print("    |    Please enter an alphabetical name")
         else:
-            if not name[0].isalpha() or not name[1].isalpha():
-                print("    |    Please enter an alphabetical name")
-                tries += 1
-            else:
-                short_name = name[0][0:2:1] + name[1][0:1:1]
-                print("    |    I'm going to call you " + short_name + " for short")
-                input_invalid = False
+            short_name = name_parts[0][:2] + name_parts[1][0]
+            print(f"    |    I'm going to call you {short_name} for short")
+            input_invalid = False
+
+        tries += 1
 
     if not input_invalid:
         stars_display = "*" * num_stars
-        print("    |    Hero " + short_name + " gets <" + stars_display + "> stars")
+        print(f"    |    Hero {short_name} gets <{stars_display}> stars")
+
+        with open("save.txt", "a") as f:
+            if hero_won:
+                save_msg = f"Hero {short_name} has killed a monster and gained {num_stars}"
+            else:
+                save_msg = "Monster has killed the hero previously."
+
+            f.write(save_msg + "\n")
 
