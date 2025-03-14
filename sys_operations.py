@@ -2,7 +2,7 @@ import os
 import sys
 import platform
 import socket
-import multiprocessing as mp
+
 
 # Lab 9 - Question 3.a.a., 3.a.b.
 # Machine Type and Processor Type
