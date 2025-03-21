@@ -18,20 +18,19 @@ print("Reading 3 rows")
 # rows = db_cursor.fetchmany(3)
 # for r in rows:
 #     print(r)
-function.query_responder(db_cursor, fetch_type="fetchmany", fetch_amount=3)
+function.query_responder(db_cursor, "fetchmany", 3)
 
 print("Reading all rows")
 # rows = db_cursor.fetchall()
 # for r in rows:
 #     print(r)
-function.query_responder(db_cursor, fetch_type="fetchall")
+function.query_responder(db_cursor, "fetchall")
 
-query2 = "INSERT INTO demo (Name, Hint) VALUES ('Michael', 'Murphy')"
+query2 = "INSERT INTO demo (Name, Hint) VALUES ('Arina', 'Mirzakhani')"
 db_cursor.execute(query2)
 db_connection.commit()
 
 id = int(input("Enter an id: "))
-
 query3 = "SELECT * FROM demo WHERE ID > ?"
 # db_cursor.execute(query3, (id))
 # function.query_responder(db_cursor, "fetchall")
