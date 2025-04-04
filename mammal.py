@@ -11,3 +11,4 @@ class Mammal:
 
     def __str__(self):
         return f"Mammal is {self.age} years old."
+
